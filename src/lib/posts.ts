@@ -55,8 +55,11 @@ export function getAllPosts(): Post[] {
 }
 
 export async function getPostBySlug(slug: string): Promise<PostWithContent | null> {
-  // Filtrer les requêtes invalides (source maps, etc.)
-  if (slug.includes('.') || slug.startsWith('_') || slug === 'favicon.ico') {
+  // Filtrer les requêtes invalides (extensions de fichiers, fichiers système)
+  const invalidExtensions = ['.map', '.js', '.css', '.json', '.xml', '.txt', '.ico'];
+  const hasInvalidExtension = invalidExtensions.some(ext => slug.endsWith(ext));
+
+  if (hasInvalidExtension || slug.startsWith('_') || slug.startsWith('.')) {
     return null;
   }
 
