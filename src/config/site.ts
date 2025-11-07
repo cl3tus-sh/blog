@@ -1,6 +1,7 @@
 export const siteConfig = {
   name: 'Cl3tus.sh',
-  description: 'Un shell ouvert sur le code, la tech et la bidouille',
+  description:
+    'Un espace pour écrire, coder, bidouiller et partager. Linux, dev et open-source, sans bruit ni fioritures',
   url: 'https://blog.cl3tus.com',
   author: 'Cletus',
   email: 'cl3tus.sh@pm.me',

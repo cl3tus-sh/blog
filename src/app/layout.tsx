@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   authors: [{ name: siteConfig.author, url: siteConfig.url }],
   openGraph: {
-    title: 'Blindtus - Daily music quiz',
+    title: siteConfig.name,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
@@ -41,7 +41,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    site: '@blindtus',
+    title: siteConfig.name,
+    description: siteConfig.description,
     creator: '@cl3tus_',
   },
 };
