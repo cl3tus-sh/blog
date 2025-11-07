@@ -13,6 +13,7 @@ export interface Post {
   slug: string;
   title: string;
   date: string;
+  updated_date?: string;
   description?: string;
   image?: string;
   tags?: string[];
@@ -43,6 +44,7 @@ export function getAllPosts(): Post[] {
         slug,
         title: data.title,
         date: data.date,
+        updated_date: data.updated_date,
         description: data.description,
         tags: data.tags || [],
         image: data.image ? `/${slug}/${data.image}` : undefined,
@@ -52,12 +54,20 @@ export function getAllPosts(): Post[] {
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
-export async function getPostBySlug(slug: string): Promise<PostWithContent> {
+export async function getPostBySlug(slug: string): Promise<PostWithContent | null> {
+  // Filtrer les requêtes invalides (extensions de fichiers, fichiers système)
+  const invalidExtensions = ['.map', '.js', '.css', '.json', '.xml', '.txt', '.ico'];
+  const hasInvalidExtension = invalidExtensions.some(ext => slug.endsWith(ext));
+
+  if (hasInvalidExtension || slug.startsWith('_') || slug.startsWith('.')) {
+    return null;
+  }
+
   const postDir = path.join(postsDirectory, slug);
   const mdPath = path.join(postDir, 'index.md');
 
   if (!fs.existsSync(mdPath)) {
-    throw new Error(`Post not found: ${slug}`);
+    return null;
   }
 
   const fileContents = fs.readFileSync(mdPath, 'utf8');
@@ -73,6 +83,7 @@ export async function getPostBySlug(slug: string): Promise<PostWithContent> {
     slug,
     title: data.title,
     date: data.date,
+    updated_date: data.updated_date,
     description: data.description,
     tags: data.tags || [],
     image: data.image ? `/${slug}/${data.image}` : undefined,
