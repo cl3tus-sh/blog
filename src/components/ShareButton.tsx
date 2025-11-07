@@ -30,6 +30,7 @@ export function ShareButton({ url }: ShareButtonProps) {
       onClick={handleCopy}
       className="gap-2"
       aria-label={copied ? 'Lien copié' : 'Copier le lien'}
+      aria-live="polite"
     >
       {copied ? (
         <>
