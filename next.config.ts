@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 import { withPlausibleProxy } from 'next-plausible';
 
+import { siteConfig } from '@/config/site';
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [],
@@ -8,5 +10,5 @@ const nextConfig: NextConfig = {
 };
 
 export default withPlausibleProxy({
-  customDomain: 'https://plausible.cl3tusdev.com',
+  customDomain: siteConfig.analytics.plausibleCustomDomain,
 })(nextConfig);
