@@ -89,6 +89,7 @@ export default function RootLayout({
           trackFileDownloads
           hash
           taggedEvents
+          enabled
         >
           <Header />
           <main className="w-full mx-auto flex grow flex-col gap-y-6 px-4">{children}</main>
