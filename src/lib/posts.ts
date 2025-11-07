@@ -13,6 +13,7 @@ export interface Post {
   slug: string;
   title: string;
   date: string;
+  updated_date?: string;
   description?: string;
   image?: string;
   tags?: string[];
@@ -43,6 +44,7 @@ export function getAllPosts(): Post[] {
         slug,
         title: data.title,
         date: data.date,
+        updated_date: data.updated_date,
         description: data.description,
         tags: data.tags || [],
         image: data.image ? `/${slug}/${data.image}` : undefined,
@@ -73,6 +75,7 @@ export async function getPostBySlug(slug: string): Promise<PostWithContent> {
     slug,
     title: data.title,
     date: data.date,
+    updated_date: data.updated_date,
     description: data.description,
     tags: data.tags || [],
     image: data.image ? `/${slug}/${data.image}` : undefined,
