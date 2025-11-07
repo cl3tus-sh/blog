@@ -21,12 +21,17 @@ RUN addgroup -g 1001 -S nodejs && \
 RUN npm install -g pnpm
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+# Install production dependencies + TypeScript (needed for next.config.ts)
+RUN pnpm install --prod --frozen-lockfile && \
+    pnpm add -D typescript
 
 # Copy built assets with proper ownership
 COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/next.config.* ./
+
+# Set ownership of the entire /app directory to nextjs user
+RUN chown -R nextjs:nodejs /app
 
 # Switch to non-root user
 USER nextjs

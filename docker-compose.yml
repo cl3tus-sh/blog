@@ -3,5 +3,5 @@ services:
     build: .
     container_name: cl3tus-sh-blog
     ports:
-      - "5000:3000"
+      - "3200:3000"
     restart: unless-stopped
