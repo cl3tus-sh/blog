@@ -54,12 +54,17 @@ export function getAllPosts(): Post[] {
     .sort((a, b) => +new Date(b.date) - +new Date(a.date));
 }
 
-export async function getPostBySlug(slug: string): Promise<PostWithContent> {
+export async function getPostBySlug(slug: string): Promise<PostWithContent | null> {
+  // Filtrer les requêtes invalides (source maps, etc.)
+  if (slug.includes('.') || slug.startsWith('_') || slug === 'favicon.ico') {
+    return null;
+  }
+
   const postDir = path.join(postsDirectory, slug);
   const mdPath = path.join(postDir, 'index.md');
 
   if (!fs.existsSync(mdPath)) {
-    throw new Error(`Post not found: ${slug}`);
+    return null;
   }
 
   const fileContents = fs.readFileSync(mdPath, 'utf8');

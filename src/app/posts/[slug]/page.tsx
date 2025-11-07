@@ -2,6 +2,7 @@ import { IconCalendar } from '@tabler/icons-react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import { BackLink } from '@/components/BackLink';
 import { PostContent } from '@/components/PostContent';
@@ -19,6 +20,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: 'Article non trouvé',
+    };
+  }
 
   return {
     title: post.title,
@@ -57,6 +64,10 @@ export async function generateStaticParams() {
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
 
   return (
     <div className="post-container">
