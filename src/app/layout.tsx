@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import PlausibleProvider from 'next-plausible';
 import { Geist, Geist_Mono, Merriweather } from 'next/font/google';
 
 import { Footer } from '@/components/Footer';
@@ -59,6 +60,14 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <PlausibleProvider
+          domain={siteConfig.analytics.plausibleDomain}
+          trackOutboundLinks
+          trackFileDownloads
+          hash
+          taggedEvents
+          pageviewProps
+        />
         <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
         <script
           dangerouslySetInnerHTML={{
