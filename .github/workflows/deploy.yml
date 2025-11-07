@@ -1,0 +1,115 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # required to push new tags/commits
+  id-token: write
+
+jobs:
+  release-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required so tags can be read
+
+      - name: Setup Git user
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Automated Version Bump
+        id: version_bump
+        uses: phips28/gh-action-bump-version@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag-prefix: "v"
+          minor-wording: "feat,feature"
+          major-wording: "BREAKING CHANGE,major"
+          patch-wording: "fix,patch,refactor"
+          commit-message: "chore(release): {{version}} [skip ci]"
+          default: patch
+
+      - name: Show new version
+        run: |
+          echo "New version: ${{ steps.version_bump.outputs.newTag }}"
+
+      - name: Deploy to production
+        id: deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd ${{ vars.APP_PATH }}
+            git fetch --all
+            git reset --hard origin/main
+            docker compose build --pull
+            docker compose up -d --build
+            docker image prune -f
+
+      # ✅ Success notification
+      - name: Notify success on Discord
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "username": "Blog Deploy",
+              "avatar_url": "https://avatars.githubusercontent.com/u/191992699?s=200&v=4",
+              "embeds": [
+                {
+                  "title": "Blog deployed successfully! 🎉",
+                  "color": 3066993,
+                  "fields": [
+                    {"name": "Environment", "value": "Production", "inline": true},
+                    {"name": "Version", "value": "${{ steps.version_bump.outputs.newTag }}", "inline": true},
+                    {"name": "Branch", "value": "${{ github.ref_name }}", "inline": true},
+                    {"name": "Commit", "value": "${{ github.sha }}"},
+                    {"name": "App", "value": "[Open blog.cl3tus.com](https://blog.cl3tus.com)"}
+                  ],
+                  "footer": {"text": "GitHub Actions • Blog Deploy"},
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK }}
+        shell: bash
+
+      # ❌ Failure notification
+      - name: Notify failure on Discord
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "username": "Blog Deploy",
+              "avatar_url": "https://avatars.githubusercontent.com/u/191992699?s=200&v=4",
+              "embeds": [
+                {
+                  "title": "Blog deployment failed! ❌",
+                  "color": 15158332,
+                  "fields": [
+                    {"name": "Environment", "value": "Production", "inline": true},
+                    {"name": "Version", "value": "${{ steps.version_bump.outputs.newTag }}", "inline": true},
+                    {"name": "Branch", "value": "${{ github.ref_name }}", "inline": true},
+                    {"name": "Commit", "value": "${{ github.sha }}"},
+                    {"name": "Job URL", "value": "[View on GitHub](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"}
+                  ],
+                  "footer": {"text": "GitHub Actions • Blog Deploy"},
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK }}
+        shell: bash
