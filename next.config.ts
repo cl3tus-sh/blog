@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withPlausibleProxy } from 'next-plausible';
 
 const nextConfig: NextConfig = {
   images: {
@@ -6,4 +7,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPlausibleProxy({
+  customDomain: 'https://plausible.cl3tusdev.com',
+})(nextConfig);

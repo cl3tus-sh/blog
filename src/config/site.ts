@@ -16,5 +16,6 @@ export const siteConfig = {
   ],
   analytics: {
     plausibleDomain: 'blog.cl3tus.com',
+    plausibleCustomDomain: 'https://plausible.cl3tus.com', // Remplacez par votre URL Plausible
   },
 };

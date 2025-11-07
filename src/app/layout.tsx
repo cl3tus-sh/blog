@@ -60,14 +60,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <PlausibleProvider
-          domain={siteConfig.analytics.plausibleDomain}
-          trackOutboundLinks
-          trackFileDownloads
-          hash
-          taggedEvents
-          pageviewProps
-        />
         <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
         <script
           dangerouslySetInnerHTML={{
@@ -89,9 +81,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${merriweather.variable} antialiased flex h-fit min-h-screen flex-col gap-y-6 font-sans`}
       >
-        <Header />
-        <main className="w-full mx-auto flex grow flex-col gap-y-6 px-4">{children}</main>
-        <Footer />
+        <PlausibleProvider
+          domain={siteConfig.analytics.plausibleDomain}
+          customDomain={siteConfig.analytics.plausibleCustomDomain}
+          selfHosted
+          trackOutboundLinks
+          trackFileDownloads
+          hash
+          taggedEvents
+          pageviewProps
+        >
+          <Header />
+          <main className="w-full mx-auto flex grow flex-col gap-y-6 px-4">{children}</main>
+          <Footer />
+        </PlausibleProvider>
       </body>
     </html>
   );
