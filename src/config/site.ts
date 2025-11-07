@@ -14,4 +14,8 @@ export const siteConfig = {
     { label: 'Accueil', href: '/' },
     { label: 'À propos', href: '/a-propos' },
   ],
+  analytics: {
+    plausibleDomain: 'blog.cl3tus.com',
+    plausibleCustomDomain: 'https://plausible.cl3tusdev.com',
+  },
 };

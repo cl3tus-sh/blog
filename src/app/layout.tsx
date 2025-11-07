@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import PlausibleProvider from 'next-plausible';
 import { Geist, Geist_Mono, Merriweather } from 'next/font/google';
 
 import { Footer } from '@/components/Footer';
@@ -80,9 +81,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${merriweather.variable} antialiased flex h-fit min-h-screen flex-col gap-y-6 font-sans`}
       >
-        <Header />
-        <main className="w-full mx-auto flex grow flex-col gap-y-6 px-4">{children}</main>
-        <Footer />
+        <PlausibleProvider
+          domain={siteConfig.analytics.plausibleDomain}
+          customDomain={siteConfig.analytics.plausibleCustomDomain}
+          selfHosted
+          trackOutboundLinks
+          trackFileDownloads
+          hash
+          taggedEvents
+          enabled
+        >
+          <Header />
+          <main className="w-full mx-auto flex grow flex-col gap-y-6 px-4">{children}</main>
+          <Footer />
+        </PlausibleProvider>
       </body>
     </html>
   );

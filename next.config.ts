@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next';
+import { withPlausibleProxy } from 'next-plausible';
+
+import { siteConfig } from '@/config/site';
 
 const nextConfig: NextConfig = {
   images: {
@@ -6,4 +9,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPlausibleProxy({
+  customDomain: siteConfig.analytics.plausibleCustomDomain,
+})(nextConfig);
