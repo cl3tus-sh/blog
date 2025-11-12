@@ -6,8 +6,21 @@ import rehypeStringify from 'rehype-stringify';
 import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
+import { visit } from 'unist-util-visit';
 
 const postsDirectory = path.join(process.cwd(), 'src/content/posts');
+
+// Plugin remark pour corriger les chemins d'images
+function remarkImagePath(slug: string) {
+  return (tree: any) => {
+    visit(tree, 'image', (node: any) => {
+      if (node.url && node.url.startsWith('./')) {
+        // Convertir ./image.jpg en /slug/image.jpg
+        node.url = `/${slug}/${node.url.slice(2)}`;
+      }
+    });
+  };
+}
 
 export interface Post {
   slug: string;
@@ -74,6 +87,7 @@ export async function getPostBySlug(slug: string): Promise<PostWithContent | nul
   const { data, content } = matter(fileContents);
   const processed = await remark()
     .use(remarkGfm)
+    .use(remarkImagePath, slug)
     .use(remarkRehype)
     .use(rehypeHighlight)
     .use(rehypeStringify)
